@@ -1,0 +1,82 @@
+{
+  "google": {
+    "need_param": true,
+    "alias": "Google",
+    "searchURL": "https://www.google.com/search?q={searchContent}+download+torrent",
+    "resultURL": "",
+    "start": "/url?q=",
+    "notIn": [
+      "accounts.google.com",
+      ".org",
+      "youtube.com",
+      "facebook.com"
+    ],
+    "sliceString": [
+      7,
+      -88
+    ]
+  },
+  "l337x": {
+    "need_param": true,
+    "alias":"1337x",
+    "searchURL": "https://www.1377x.to/search/{searchContent}/1/",
+    "resultURL": "https://www.1377x.to",
+    "start": "/torrent",
+    "notIn": "",
+    "sliceString": ""
+  },
+  "yts": {
+    "need_param": true,
+    "alias":"YTS",
+    "searchURL": "https://yts.mx/browse-movies/{searchContent}/all/all/0/latest",
+    "resultURL":"",
+    "start": "https://yts.mx/movie/",
+    "notIn": "",
+    "sliceString": ""
+  },
+  "demonoid": {
+    "need_param": true,
+    "alias": "Demonoid",
+    "searchURL": "https://demonoid.is/files/?category=0&subcategory=0&quality=0&seeded=2&external=2&query={searchContent}&sort=",
+    "resultURL": "https://demonoid.is",
+    "start": "/files/details",
+    "notIn": "",
+    "sliceString": ""
+  },
+  "ettv": {
+    "need_param": true,
+    "alias": "ETTV",
+    "searchURL": "https://www.ettv.to/torrents-search.php?search={searchContent}",
+    "resultURL": "https://www.ettv.to",
+    "start": "/torrent/",
+    "notIn": "",
+    "sliceString": ""
+  },
+  "tpb": {
+    "need_param": false,
+    "alias": "The Pirate Bay",
+    "searchURL": "https://tpb.party/search/{searchContent}/{page}/7/0",
+    "resultURL": "",
+    "start": "",
+    "notIn": "",
+    "sliceString": ""
+  },
+  "nyaa": {
+    "need_param": false,
+    "alias": "Nyaa",
+    "searchURL": "https://nyaa.si/?q={searchContent}&f=0&c=0_0&s=seeders&o=desc&p={page}",
+    "resultURL": "",
+    "start": "",
+    "notIn": "",
+    "sliceString": ""
+  },
+  "eztv": {
+    "need_param": false,
+    "alias": "EZTV",
+    "searchURL": "https://eztv.io/search/{searchContent}",
+    "resultURL": "",
+    "start": "",
+    "notIn": "",
+    "sliceString": ""
+  }
+}

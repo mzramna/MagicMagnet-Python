@@ -1,5 +1,5 @@
 import PySimpleGUI as sg
-import os
+import os,json
 import pyperclip
 from scripts.algorithm import MagicMagnet
 from scripts.settings import Settings
@@ -31,7 +31,10 @@ setting = settings.read_settings()
 
 sg.change_look_and_feel(setting['theme'])
 font = ('Segoe UI Light', 12)
-sites=['Google','The Pirate Bay','1337x','Nyaa','Demonoid','YTS','ETTV','EZTV']
+search_params = json.load(open("search_parameters.json"))
+sites=[]
+for site in search_params:
+    sites.append(search_params[site]["alias"])
 def create_checkboc(name: str):
     return sg.Checkbox(name, font=font, size=(11, 1))
 
@@ -40,15 +43,15 @@ def create_table(websites_names: [str]):
     result = []
     for website_name_index in range(0,len(websites_names),3):
         if website_name_index+2 <len(websites_names):
-            result.append([sg.Text('  '), sg.Checkbox(websites_names[website_name_index], font=font, size=(11, 1), default=True),
-     sg.Checkbox(websites_names[website_name_index+1], font=font, size=(16, 1)), sg.Checkbox(websites_names[website_name_index+2], font=font)])
+            result.append([sg.Text('  '), sg.Checkbox(websites_names[website_name_index], font=font, default=True),
+     sg.Checkbox(websites_names[website_name_index+1], font=font), sg.Checkbox(websites_names[website_name_index+2], font=font)])
         elif website_name_index+1 <len(websites_names):
             result.append(
-                [sg.Text('  '), sg.Checkbox(websites_names[website_name_index], font=font, size=(11, 1), default=True),
-                 sg.Checkbox(websites_names[website_name_index + 1], font=font, size=(16, 1))])
+                [sg.Text('  '), sg.Checkbox(websites_names[website_name_index], font=font, default=True),
+                 sg.Checkbox(websites_names[website_name_index + 1], font=font,)])
         else:
             result.append(
-                [sg.Text('  '), sg.Checkbox(websites_names[website_name_index], font=font, size=(11, 1), default=True)])
+                [sg.Text('  '), sg.Checkbox(websites_names[website_name_index], font=font,  default=True)])
     return result
 
 def layout_builder(website_names:[str]):
@@ -111,7 +114,7 @@ while True:
             restartEvent, restartResult = restartWindow.read()
 
     if event == 'Support this project':
-        os.startfile('https://github.com/pedrolemoz/MagicMagnet-Python/')
+        os.startfile('https://github.com/mzramna/MagicMagnet-Python/')
 
     if event == 'About':
         aboutLayout = [
@@ -131,7 +134,11 @@ while True:
                 break
 
     if event == 'Search':
-        process.search(values[1], google = values[2], tpb = values[3], l337x = values[4], nyaa = values[5], demonoid = values[6], yts = values[7], ettv = values[8], eztv = values[9])
+        search_sites=[]
+        for i in range(2,len(values)):
+            if values[i]:
+                search_sites.append(sites[i-2])
+        process.search(values[1], search_sites)
 
         downloadLinks = []
 
