@@ -14,9 +14,8 @@ class MagicMagnet():
     def search(self, searchContent, sites: [str], total_search_pages=5):
         search_params = json.load(open("search_parameters.json"))
         for site in search_params:
-            print(site)
             if search_params[site]["alias"] in sites:
-                search_params[site]["searchURL"].replace("{searchContent}",searchContent)
+                search_params[site]["searchURL"]=str(search_params[site]["searchURL"]).replace("{searchContent}",str(urllib.parse.quote_plus(searchContent)))
                 if search_params[site]["need_param"]:
                     self._getDownloadPages(search_params[site]['searchURL'],resultURL=search_params[site]["resultURL"], start=search_params[site]['start'], notIn=search_params[site]['notIn'],
                                            sliceString=search_params[site]['sliceString'])
@@ -65,6 +64,7 @@ class MagicMagnet():
     def _getPageLinks(self, searchURL):
         if searchURL.endswith('/&s'):
             searchURL = searchURL[:-2]
+        print(searchURL)
 
         sg.Print(f'Searching in: {searchURL}\n', font=('Segoe UI', 10), no_button=True)
         # print(f'Searching in: {searchURL}\n')
