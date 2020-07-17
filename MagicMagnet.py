@@ -77,7 +77,7 @@ def layout_builder(website_names:[str]):
     result.append([sg.Text('  '), sg.Button('Support this project', size=(17, 0), font=('Segoe UI Light', 10, 'bold')),
      sg.VerticalSeparator(pad=(6, 3)), sg.Button('About', size=(7, 0), font=('Segoe UI Light', 10, 'bold')),
      sg.VerticalSeparator(pad=(6, 3)), sg.Button('Exit', size=(12, 0), font=('Segoe UI Light', 10, 'bold'))])
-    result.append([sg.Text('\nDeveloped by Pedro Lemos (@pedrolemoz)', font=font, size=(42, 0), justification='center')])
+    result.append([sg.Text('\nDeveloped by Pedro Lemos (@pedrolemoz) and mzramna (@mzramna)', font=font, size=(42, 0), justification='center')])
     return result
 
 mainLayout = layout_builder(sites)
