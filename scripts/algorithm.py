@@ -15,19 +15,36 @@ class MagicMagnet():
         search_params = json.load(open("search_parameters.json"))
         for site in search_params:
             if search_params[site]["alias"] in sites:
-                search_params[site]["searchURL"]=str(search_params[site]["searchURL"]).replace("{searchContent}",str(urllib.parse.quote_plus(searchContent)))
-                if search_params[site]["need_param"]:
-                    self._getDownloadPages(search_params[site]['searchURL'],resultURL=search_params[site]["resultURL"], start=search_params[site]['start'], notIn=search_params[site]['notIn'],
-                                           sliceString=search_params[site]['sliceString'])
+                if "urlEncode" not in search_params[site] or search_params[site]["urlEncode"] == "":
+                    search_params[site]["searchURL"]=str(search_params[site]["searchURL"]).replace("{searchContent}",str(urllib.parse.quote_plus(searchContent)))
+                elif search_params[site]["urlEncode"]=="utf-8":
+                    search_params[site]["searchURL"] = str(search_params[site]["searchURL"]).replace("{searchContent}",str(urllib.parse.quote(searchContent)))
                 else:
-                    for page in range(1,total_search_pages):
-                        self._getPageLinks(search_params[site]["searchURL"].replace("{page}",str(page)))
+                    search_params[site]["searchURL"] = str(search_params[site]["searchURL"]).replace("{searchContent}",str(urllib.parse.quote_plus(searchContent,encoding=search_params[site]["urlEncode"])))
+                if "multiple_page" in search_params[site] and search_params[site]["multiple_page"]:
+                    for page in range(1, total_search_pages):
+                        search_params[site]['searchURL']=search_params[site]['searchURL'].replace("{page}", str(page))
+                        if search_params[site]["need_param"]:
+                            self._getDownloadPages(search_params[site]['searchURL'],
+                                                   resultURL=search_params[site]["resultURL"],
+                                                   start=search_params[site]['start'],
+                                                   notIn=search_params[site]['notIn'],
+                                                   sliceString=search_params[site]['sliceString'])
+                        else:
+                            self._getPageLinks(search_params[site]["searchURL"])
+                else:
+                    if search_params[site]["need_param"]:
+                        self._getDownloadPages(search_params[site]['searchURL'],
+                                               resultURL=search_params[site]["resultURL"],
+                                               start=search_params[site]['start'],
+                                               notIn=search_params[site]['notIn'],
+                                               sliceString=search_params[site]['sliceString'])
+                    else:
+                        self._getPageLinks(search_params[site]["searchURL"])
 
-    def _getDownloadPages(self, searchURL, resultURL="", start="", notIn="", sliceString=""):
+    def _getDownloadPages(self, searchURL, start, resultURL="", notIn="", sliceString=""):
         if resultURL == "":
             resultURL = None
-        if start == "":
-            start = None
         if notIn == "":
             notIn = None
         if sliceString == "":
@@ -64,7 +81,6 @@ class MagicMagnet():
     def _getPageLinks(self, searchURL):
         if searchURL.endswith('/&s'):
             searchURL = searchURL[:-2]
-        print(searchURL)
 
         sg.Print(f'Searching in: {searchURL}\n', font=('Segoe UI', 10), no_button=True)
         # print(f'Searching in: {searchURL}\n')

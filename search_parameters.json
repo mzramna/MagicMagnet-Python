@@ -1,10 +1,11 @@
 {
   "google": {
     "need_param": true,
+    "multiple_page":false,
     "alias": "Google",
     "searchURL": "https://www.google.com/search?q={searchContent}+download+torrent",
-    "resultURL": "",
     "start": "/url?q=",
+    "resultURL": "",
     "notIn": [
       "accounts.google.com",
       ".org",
@@ -14,69 +15,95 @@
     "sliceString": [
       7,
       -88
-    ]
+    ],
+    "urlEncode": ""
   },
   "l337x": {
     "need_param": true,
+    "multiple_page":false,
     "alias":"1337x",
     "searchURL": "https://www.1377x.to/search/{searchContent}/1/",
-    "resultURL": "https://www.1377x.to",
     "start": "/torrent",
+    "resultURL": "https://www.1377x.to",
     "notIn": "",
-    "sliceString": ""
+    "sliceString": "",
+    "urlEncode": ""
   },
   "yts": {
     "need_param": true,
+    "multiple_page":false,
     "alias":"YTS",
     "searchURL": "https://yts.mx/browse-movies/{searchContent}/all/all/0/latest",
-    "resultURL":"",
     "start": "https://yts.mx/movie/",
+    "resultURL":"",
     "notIn": "",
-    "sliceString": ""
+    "sliceString": "",
+    "urlEncode": ""
   },
   "demonoid": {
     "need_param": true,
+    "multiple_page":false,
     "alias": "Demonoid",
     "searchURL": "https://demonoid.is/files/?category=0&subcategory=0&quality=0&seeded=2&external=2&query={searchContent}&sort=",
-    "resultURL": "https://demonoid.is",
     "start": "/files/details",
+    "resultURL": "https://demonoid.is",
     "notIn": "",
-    "sliceString": ""
+    "sliceString": "",
+    "urlEncode": ""
   },
   "ettv": {
     "need_param": true,
+    "multiple_page":false,
     "alias": "ETTV",
     "searchURL": "https://www.ettv.to/torrents-search.php?search={searchContent}",
-    "resultURL": "https://www.ettv.to",
     "start": "/torrent/",
+    "resultURL": "https://www.ettv.to",
     "notIn": "",
-    "sliceString": ""
+    "sliceString": "",
+    "urlEncode": ""
   },
   "tpb": {
     "need_param": false,
+    "multiple_page":true,
     "alias": "The Pirate Bay",
     "searchURL": "https://tpb.party/search/{searchContent}/{page}/7/0",
-    "resultURL": "",
     "start": "",
+    "resultURL": "",
     "notIn": "",
-    "sliceString": ""
+    "sliceString": "",
+    "urlEncode": ""
   },
   "nyaa": {
     "need_param": false,
+    "multiple_page":true,
     "alias": "Nyaa",
     "searchURL": "https://nyaa.si/?q={searchContent}&f=0&c=0_0&s=seeders&o=desc&p={page}",
-    "resultURL": "",
     "start": "",
+    "resultURL": "",
     "notIn": "",
-    "sliceString": ""
+    "sliceString": "",
+    "urlEncode": ""
   },
   "eztv": {
     "need_param": false,
+    "multiple_page":true,
     "alias": "EZTV",
     "searchURL": "https://eztv.io/search/{searchContent}",
-    "resultURL": "",
     "start": "",
+    "resultURL": "",
     "notIn": "",
-    "sliceString": ""
+    "sliceString": "",
+    "urlEncode": ""
+  },
+  "viatorrent": {
+    "need_param": true,
+    "multiple_page": true,
+    "alias": "via torrents UNSTABLE",
+    "searchURL": "https://viatorrents.com/{searchContent}/{page}/",
+    "start": "https://viatorrents.com/",
+    "resultURL": "",
+    "notIn": "",
+    "sliceString": "",
+    "urlEncode": "utf-8"
   }
 }
