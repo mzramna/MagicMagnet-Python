@@ -103,3 +103,24 @@ It will create a folder called ```build``` with the executable inside.
 > Note 1: I don't know why, but cx_Freeze doesn't work for me in Python 3.8. I'm currently using Python 3.7.6 to build this project.
 
 > Note 2: If your executable fail to start, try rename the folder Tkinter in lib directory to tkinter.
+
+
+to add new websites just edit the `search_parameters.json` file like this:
+```
+"google": { ##website reference for easy debug
+    "need_param": true,                                                                 ##  parameter that defines if the folowing parameters will be needed
+    "alias": "Google",                                                                  ##  name shown in options
+    "searchURL": "https://www.google.com/search?q={searchContent}+download+torrent",    ##  url with the tag {searchContent} that will be replaced by the searching keyords,and it necessary the {page} tag that symbolizes the result page if aplies to website
+    "resultURL": "",                                                                    ##  url where the query result will be shown
+    "start": "/url?q=",                                                                 ##  begining of the result url string
+    "notIn": [                                                                          ##  will not accept results in this hostnames
+      "accounts.google.com",
+      ".org",
+      "youtube.com",
+      "facebook.com"
+    ],
+    "sliceString": [                                                                    ##  how to slice the result strings
+      7,
+      -88
+    ]
+```
