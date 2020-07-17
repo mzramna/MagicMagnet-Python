@@ -98,7 +98,7 @@
   "viatorrent": {
     "need_param": true,
     "multiple_page": true,
-    "alias": "via torrents UNSTABLE",
+    "alias": "via torrents",
     "searchURL": "https://viatorrents.com/{searchContent}/{page}/",
     "start": "https://viatorrents.com/",
     "resultURL": "",
