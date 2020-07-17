@@ -30,25 +30,54 @@ settings = Settings()
 setting = settings.read_settings()
 
 sg.change_look_and_feel(setting['theme'])
+font = ('Segoe UI Light', 12)
+sites=['Google','The Pirate Bay','1337x','Nyaa','Demonoid','YTS','ETTV','EZTV']
+def create_checkboc(name: str):
+    return sg.Checkbox(name, font=font, size=(11, 1))
 
-mainLayout = [
-    [sg.Text('\n', font=('Segoe UI Light', 5))],
-    [sg.Text('  Magic Magnet', font=('Segoe UI Light', 24), text_color='#ff0000', justification='left'), sg.Image('icon.png')],
-    [sg.Text('    Search for something', font=('Segoe UI Light', 14))],
-    [sg.Text('\n', font=('Segoe UI Light', 1))],
-    [sg.Text('  '), sg.InputText(size=(28, 6), font=('Segoe UI Light', 12)), sg.VerticalSeparator(pad=(4, (3, 4))), sg.Submit('Search', size=(12, 0), font=('Segoe UI Light', 10, 'bold'))],
-    [sg.Text('\n', font=('Segoe UI Light', 1))],
-    [sg.Text('    Choose your search source for content', font=('Segoe UI Light', 14))],
-    [sg.Text('\n', font=('Segoe UI Light', 1))],
-    [sg.Text('  '), sg.Checkbox('Google', font=('Segoe UI Light', 12), size=(11, 1), default=True), sg.Checkbox('The Pirate Bay', font=('Segoe UI Light', 12), size=(16, 1)), sg.Checkbox('1337x', font=('Segoe UI Light', 12))],
-    [sg.Text('  '), sg.Checkbox('Nyaa', font=('Segoe UI Light', 12), size=(11, 1)), sg.Checkbox('Demonoid', font=('Segoe UI Light', 12), size=(16, 1)), sg.Checkbox('YTS', font=('Segoe UI Light', 12))],
-    [sg.Text('  '), sg.Checkbox('ETTV', font=('Segoe UI Light', 12), size=(11, 1)), sg.Checkbox('EZTV', font=('Segoe UI Light', 12), size=(16, 1))],
-    [sg.Text('\n', font=('Segoe UI Light', 1))],
-    [sg.Text(f'    Application theme', font=('Segoe UI Light', 14)), sg.Radio('Light', 'theme', default = True if 'Light' in setting['theme'] else False, font=('Segoe UI Light', 12)), sg.Radio('Dark', 'theme', default = True if 'Dark' in setting['theme'] else False, font=('Segoe UI Light', 12)), sg.Button('Apply', size=(7, 0), font=('Segoe UI Light', 10, 'bold'))],
-    [sg.Text('\n', font=('Segoe UI Light', 1))],
-    [sg.Text('  '), sg.Button('Support this project', size=(17, 0), font=('Segoe UI Light', 10, 'bold')), sg.VerticalSeparator(pad=(6, 3)), sg.Button('About', size=(7, 0), font=('Segoe UI Light', 10, 'bold')), sg.VerticalSeparator(pad=(6, 3)), sg.Button('Exit', size=(12, 0), font=('Segoe UI Light', 10, 'bold'))],
-    [sg.Text('\nDeveloped by Pedro Lemos (@pedrolemoz)', font=('Segoe UI Light', 12), size=(42, 0), justification='center')]
-]
+
+def create_table(websites_names: [str]):
+    result = []
+    for website_name_index in range(0,len(websites_names),3):
+        if website_name_index+2 <len(websites_names):
+            result.append([sg.Text('  '), sg.Checkbox(websites_names[website_name_index], font=font, size=(11, 1), default=True),
+     sg.Checkbox(websites_names[website_name_index+1], font=font, size=(16, 1)), sg.Checkbox(websites_names[website_name_index+2], font=font)])
+        elif website_name_index+1 <len(websites_names):
+            result.append(
+                [sg.Text('  '), sg.Checkbox(websites_names[website_name_index], font=font, size=(11, 1), default=True),
+                 sg.Checkbox(websites_names[website_name_index + 1], font=font, size=(16, 1))])
+        else:
+            result.append(
+                [sg.Text('  '), sg.Checkbox(websites_names[website_name_index], font=font, size=(11, 1), default=True)])
+    return result
+
+def layout_builder(website_names:[str]):
+    result=[]
+
+    result.append([sg.Text('\n', font=('Segoe UI Light', 5))])
+    result.append([sg.Text('  Magic Magnet', font=('Segoe UI Light', 24), text_color='#ff0000', justification='left'), sg.Image('icon.png')])
+    result.append([sg.Text('    Search for something', font=('Segoe UI Light', 14))])
+    result.append([sg.Text('\n', font=('Segoe UI Light', 1))])
+    result.append([sg.Text('  '), sg.InputText(size=(28, 6), font=font), sg.VerticalSeparator(pad=(4, (3, 4))), sg.Submit('Search', size=(12, 0), font=('Segoe UI Light', 10, 'bold'))])
+    result.append([sg.Text('\n', font=('Segoe UI Light', 1))])
+    result.append([sg.Text('    Choose your search source for content', font=('Segoe UI Light', 14))])
+    result.append([sg.Text('\n', font=('Segoe UI Light', 1))])
+    for line in create_table(website_names):
+        result.append(line)
+
+    result.append([sg.Text('\n', font=('Segoe UI Light', 1))])
+    result.append([sg.Text(f'    Application theme', font=('Segoe UI Light', 14)),
+                   sg.Radio('Light', 'theme', default=True if 'Light' in setting['theme'] else False, font=font),
+                    sg.Radio('Dark', 'theme', default=True if 'Dark' in setting['theme'] else False, font=font),
+                    sg.Button('Apply', size=(7, 0), font=('Segoe UI Light', 10, 'bold'))])
+    result.append([sg.Text('\n', font=('Segoe UI Light', 1))])
+    result.append([sg.Text('  '), sg.Button('Support this project', size=(17, 0), font=('Segoe UI Light', 10, 'bold')),
+     sg.VerticalSeparator(pad=(6, 3)), sg.Button('About', size=(7, 0), font=('Segoe UI Light', 10, 'bold')),
+     sg.VerticalSeparator(pad=(6, 3)), sg.Button('Exit', size=(12, 0), font=('Segoe UI Light', 10, 'bold'))])
+    result.append([sg.Text('\nDeveloped by Pedro Lemos (@pedrolemoz)', font=font, size=(42, 0), justification='center')])
+    return result
+
+mainLayout = layout_builder(sites)
 
 window = sg.Window('Magic Magnet', mainLayout, size=(430, 510), icon='icon.ico')
 
