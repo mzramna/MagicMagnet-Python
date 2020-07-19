@@ -34,10 +34,6 @@ sg.LOOK_AND_FEEL_TABLE['MagicMagnetDark'] = {
     'BORDER': 0, 'SLIDER_DEPTH': 0, 'PROGRESS_DEPTH': 0,
 }
 
-settings = Settings()
-setting = settings.read_settings()
-
-sg.change_look_and_feel(setting['theme'])
 font = ('Segoe UI Light', 12)
 try:
     search_params = json.load(open("search_parameters.json"))
@@ -98,6 +94,10 @@ def Search(value_to_search,sites_to_search,amount_of_pages,process):
     process.search(value_to_search, sites_to_search, total_search_pages=amount_of_pages)
 
 def UI(process):
+    settings = Settings()
+    setting = settings.read_settings()
+
+    sg.change_look_and_feel(setting['theme'])
     mainLayout = layout_builder(sites_alias)
 
     window = sg.Window('Magic Magnet', mainLayout, icon='icon.ico')
@@ -113,7 +113,6 @@ def UI(process):
 
         if event == 'Apply':
             status = False
-            print(values)
             if values[len(values)-1]:
                 status = settings.change_theme('MagicMagnetLight')
 
@@ -225,15 +224,14 @@ def UI(process):
                     clipboardEvent, clipboard_result = clipboardWindow.read()
 
 def main():
-    parser=argparse.ArgumentParser()
+    parser=argparse.ArgumentParser(description="utility to search multiple torrent websites at once,if none argument parsed,will open in ui mode")
     parser.add_argument("-w","--search-websites",help="the websites where will search, default 5")
     parser.add_argument("-n","--number-of-pages",help="the amount of pages that will search in each compatible website, default all")
     parser.add_argument("-s","--value-to-search",help="the text wich will be researched")
     parser.add_argument("-f","--output-file",help="the file where will be saved all the retrived websites")
     parser.add_argument("-N","--dont-save",help="if this flag recive any value the console mode will not save any output file")
-    parser.add_argument("--silent",help="if this flag recive any value the aplication will not show any log")
+    parser.add_argument("--silent",help="if this flag recive any value the aplication will not show any log,can be used with ui mode")
     args=parser.parse_args()
-    print(args)
     empty_params=0
     process = MagicMagnet()
     if args.silent!=None:
@@ -263,7 +261,6 @@ def main():
             except :
                 tmp_sites=[tmp_sites]
             for site in tmp_sites:
-                print(site)
                 if site not in sites_code_name:
                     print("all the parameters of --search-websites must be one of the codes into the json file,not alias name")
                     exit(1)
@@ -283,7 +280,6 @@ def main():
             parameters["dont_save"]=True
         else:
             parameters["dont_save"] =False
-        print(parameters)
         process.ui=False
         Search(value_to_search=parameters["value_to_search"],sites_to_search=parameters["search_websites"],amount_of_pages=parameters["number_of_pages"],process=process)
         if not parameters["dont_save"]:
