@@ -65,7 +65,7 @@ def create_table(websites_names: [str]):
     column=sg.Column(checkboxs,scrollable=True,vertical_scroll_only=True,size=[350,100])
     return column
 
-def layout_builder(website_names:[str]):
+def layout_builder(website_names:[str],setting):
     result=[]
 
     result.append([sg.Text('\n', font=('Segoe UI Light', 5))])
@@ -98,7 +98,7 @@ def UI(process):
     setting = settings.read_settings()
 
     sg.change_look_and_feel(setting['theme'])
-    mainLayout = layout_builder(sites_alias)
+    mainLayout = layout_builder(sites_alias,setting)
 
     window = sg.Window('Magic Magnet', mainLayout, icon='icon.ico')
 
