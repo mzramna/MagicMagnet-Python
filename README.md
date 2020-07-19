@@ -38,6 +38,7 @@ By now, supported sources are:
 * YTS (Fast, focused in lightweight movies)
 * Demonoid (Fast, focused in TV Shows)
 * ETTV (Slow, focused in TV Shows)
+* viatorrent (fast,focused in brazilian portuguese dubed movies,series and animation)
 
 After the search is finished, you can:
 
@@ -57,7 +58,7 @@ For development, we plan to use the ```asyncio``` library (for a asynchronous co
 
 ### From an executable (for Windows)
 
-Download the latest [build](https://github.com/mzramna/MagicMagnet-Python/blob/python/build/MagicMagnet-amd64.rar) and you're done.
+Download the latest [build](https://github.com/mzramna/MagicMagnet-Python/releases/tag/2.1) and you're done.
 
 ### From source
 
@@ -126,4 +127,31 @@ to add new websites just edit the `search_parameters.json` file like this:
       -88
     ],
     "urlEncode": ""                                                                     ##  define,if necessary,the url encode, probly if empty not work, replace with "utf-8"
+```
+
+the terminal commands are listed here:
+```
+usage: MagicMagnet.py [-h] [-w SEARCH_WEBSITES] [-n NUMBER_OF_PAGES]
+                      [-s VALUE_TO_SEARCH] [-f OUTPUT_FILE] [-N DONT_SAVE]
+                      [--silent SILENT]
+
+utility to search multiple torrent websites at once,if none argument
+parsed,will open in ui mode
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -w SEARCH_WEBSITES, --search-websites SEARCH_WEBSITES
+                        the websites where will search, default 5
+  -n NUMBER_OF_PAGES, --number-of-pages NUMBER_OF_PAGES
+                        the amount of pages that will search in each
+                        compatible website, default all
+  -s VALUE_TO_SEARCH, --value-to-search VALUE_TO_SEARCH
+                        the text wich will be researched
+  -f OUTPUT_FILE, --output-file OUTPUT_FILE
+                        the file where will be saved all the retrived websites
+  -N DONT_SAVE, --dont-save DONT_SAVE
+                        if this flag recive any value the console mode will
+                        not save any output file
+  --silent SILENT       if this flag recive any value the aplication will not
+                        show any log,can be used with ui mode
 ```
