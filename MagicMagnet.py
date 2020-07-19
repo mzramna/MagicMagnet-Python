@@ -35,9 +35,6 @@ search_params = json.load(open("search_parameters.json"))
 sites=[]
 for site in search_params:
     sites.append(search_params[site]["alias"])
-def create_checkboc(name: str):
-    return sg.Checkbox(name, font=font, size=(11, 1))
-
 
 def create_table(websites_names: [str]):
     result = []
@@ -95,11 +92,11 @@ while True:
     
     if event == 'Apply':
         status = False
-
-        if values[10]:
+        print(values)
+        if values[len(values)-1]:
             status = settings.change_theme('MagicMagnetLight')
         
-        elif values[11]:
+        elif values[len(values)]:
             status = settings.change_theme('MagicMagnetDark')
         
         if status:
