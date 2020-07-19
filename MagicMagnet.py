@@ -1,9 +1,17 @@
+import sys
+
 import PySimpleGUI as sg
 import os,json
 import pyperclip
 from scripts.algorithm import MagicMagnet
 from scripts.settings import Settings
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
 
+    return os.path.join(base_path, relative_path)
 sg.LOOK_AND_FEEL_TABLE['MagicMagnetLight'] = {
     'BACKGROUND': 'white',
     'TEXT': '#323232',
@@ -34,10 +42,13 @@ font = ('Segoe UI Light', 12)
 try:
     search_params = json.load(open("search_parameters.json"))
 except:
-    search_params=[]
+    search_params=json.load(open(resource_path("search_parameters.json")))
+    json.dump(search_params,open("search_parameters.json",'w+'))
+
 sites=[]
 for site in search_params:
     sites.append(search_params[site]["alias"])
+
 
 def create_table(websites_names: [str]):
     checkboxs = []
@@ -60,7 +71,7 @@ def layout_builder(website_names:[str]):
     result=[]
 
     result.append([sg.Text('\n', font=('Segoe UI Light', 5))])
-    result.append([sg.Text('  Magic Magnet', font=('Segoe UI Light', 24), text_color='#ff0000', justification='left'), sg.Image('icon.png')])
+    result.append([sg.Text('  Magic Magnet', font=('Segoe UI Light', 24), text_color='#ff0000', justification='left'), sg.Image(resource_path('icon.png'))])
     result.append([sg.Text('    Search for something', font=('Segoe UI Light', 14))])
     result.append([sg.Text('\n', font=('Segoe UI Light', 1))])
     result.append([sg.Text('  '), sg.InputText(size=(28, 6), font=font), sg.VerticalSeparator(pad=(4, (3, 4))), sg.Submit('Search', size=(12, 0), font=('Segoe UI Light', 10, 'bold'))])
