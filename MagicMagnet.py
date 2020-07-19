@@ -69,7 +69,7 @@ def layout_builder(website_names:[str]):
     result.append([sg.Text('\n', font=('Segoe UI Light', 1))])
     result.append([create_table(website_names)])
     result.append([sg.Text('\n', font=('Segoe UI Light', 1))])
-    result.append([sg.Text('total of pages to search(if applied):', font=('Segoe UI Light', 14)),sg.Spin([i for i in range(1,30)], initial_value=5)])
+    result.append([sg.Text('                total of pages to search(if applied):', font=font),sg.Spin([i for i in range(1,30)], initial_value=5)])
     result.append([sg.Text(f'    Application theme', font=('Segoe UI Light', 14)),
                    sg.Radio('Light', 'theme', default=True if 'Light' in setting['theme'] else False, font=font),
                     sg.Radio('Dark', 'theme', default=True if 'Dark' in setting['theme'] else False, font=font),

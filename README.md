@@ -6,18 +6,19 @@
   <img src="http://ForTheBadge.com/images/badges/made-with-python.svg" alt="Made with Python"/>
 
 
-![GitHub repo size](https://img.shields.io/github/repo-size/pedrolemoz/MagicMagnet-Python?color=red)
+![GitHub repo size](https://img.shields.io/github/repo-size/mzramna/MagicMagnet-Python?color=red)
 [![Project Owner](https://img.shields.io/badge/owner-Pedro%20Lemos-orange)](https://github.com/pedrolemoz/)
-![GitHub stars](https://img.shields.io/github/stars/pedrolemoz/MagicMagnet-Python?style=social)
-[![GitHub forks](https://img.shields.io/github/forks/pedrolemoz/MagicMagnet-Python?style=social)](https://github.com/pedrolemoz/MagicMagnet/fork)
+[![Project Owner](https://img.shields.io/badge/owner-mzramna-red)](https://github.com/mzramna/)
+![GitHub stars](https://img.shields.io/github/stars/mzramna/MagicMagnet-Python?style=social)
+[![GitHub forks](https://img.shields.io/github/forks/mzramna/MagicMagnet-Python?style=social)](https://github.com/mzramna/MagicMagnet-Python/fork)
 
 ## Get magnet links from internet without any effort! :magnet:
 
 ## Screenshots
 
 <p align="center">
-  <img src="https://github.com/pedrolemoz/MagicMagnet-Python/raw/python/assets/screenshot_main_menu_light.png" alt="Menu light"/>
-  <img src="https://github.com/pedrolemoz/MagicMagnet-Python/raw/python/assets/screenshot_main_menu_dark.png" alt="Menu light"/>
+  <img src="./assets/screenshot_main_menu_light.png" alt="Menu light"/>
+  <img src="./assets/screenshot_main_menu_dark.png" alt="Menu light"/>
   
 *Main menu in light and dark themes*
 
@@ -56,7 +57,7 @@ For development, we plan to use the ```asyncio``` library (for a asynchronous co
 
 ### From an executable (for Windows)
 
-Download the latest [build](https://github.com/pedrolemoz/MagicMagnet-Python/blob/python/build/MagicMagnet-amd64.rar) and you're done.
+Download the latest [build](https://github.com/mzramna/MagicMagnet-Python/blob/python/build/MagicMagnet-amd64.rar) and you're done.
 
 ### From source
 
