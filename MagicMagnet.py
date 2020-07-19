@@ -1,10 +1,10 @@
-import sys
-
 import PySimpleGUI as sg
-import os,json
+import os,json,sys
 import pyperclip
 from scripts.algorithm import MagicMagnet
 from scripts.settings import Settings
+import argparse
+
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
@@ -45,9 +45,11 @@ except:
     search_params=json.load(open(resource_path("search_parameters.json")))
     json.dump(search_params,open("search_parameters.json",'w+'))
 
-sites=[]
+sites_alias=[]
+sites_code_name=search_params.keys()
 for site in search_params:
-    sites.append(search_params[site]["alias"])
+    sites_alias.append(search_params[site]["alias"])
+
 
 
 def create_table(websites_names: [str]):
@@ -91,128 +93,182 @@ def layout_builder(website_names:[str]):
      sg.VerticalSeparator(pad=(6, 3)), sg.Button('Exit', size=(12, 0), font=('Segoe UI Light', 10, 'bold'))])
     result.append([sg.Text('\nDeveloped by Pedro Lemos (@pedrolemoz) and mzramna (@mzramna)', font=font, size=(42, 0), justification='center')])
     return result
-mainLayout = layout_builder(sites)
 
-window = sg.Window('Magic Magnet', mainLayout, icon='icon.ico')
+def Search(value_to_search,sites_to_search,amount_of_pages,process):
+    process.search(value_to_search, sites_to_search, total_search_pages=amount_of_pages)
 
-process = MagicMagnet()
+def UI(process):
+    mainLayout = layout_builder(sites_alias)
 
-while True:
-    event, values = window.read()
+    window = sg.Window('Magic Magnet', mainLayout, icon='icon.ico')
 
-    if event in (None, 'Exit'):
-        window.close()
-        break
-    
-    if event == 'Apply':
-        status = False
-        print(values)
-        if values[len(values)-1]:
-            status = settings.change_theme('MagicMagnetLight')
-        
-        elif values[len(values)]:
-            status = settings.change_theme('MagicMagnetDark')
-        
-        if status:
-            restartLayout = [
-                [sg.Text('\n', font=('Segoe UI Light', 5))],
-                [sg.Text('Restart to apply changes', font=('Segoe UI Light', 14), size=(20, 0), justification='left')],
+
+
+    while True:
+        event, values = window.read()
+
+        if event in (None, 'Exit'):
+            window.close()
+            break
+
+        if event == 'Apply':
+            status = False
+            print(values)
+            if values[len(values)-1]:
+                status = settings.change_theme('MagicMagnetLight')
+
+            elif values[len(values)]:
+                status = settings.change_theme('MagicMagnetDark')
+
+            if status:
+                restartLayout = [
+                    [sg.Text('\n', font=('Segoe UI Light', 5))],
+                    [sg.Text('Restart to apply changes', font=('Segoe UI Light', 14), size=(20, 0), justification='left')],
+                    [sg.Text('\n', font=('Segoe UI Light', 1))]
+                ]
+
+                restartWindow = sg.Window('Sucess!', restartLayout, auto_close=True, icon='icon.ico')
+
+                restartEvent, restartResult = restartWindow.read()
+
+        if event == 'Support this project':
+            os.startfile('https://github.com/mzramna/MagicMagnet-Python/')
+
+        if event == 'About':
+            aboutLayout = [
+                [sg.Text('\n', font=('Segoe UI Light', 1))],
+                [sg.Text('This project was born with an idea for automatize torrent downloading.\nI don\'t wanna search for torrent and see boring adverts. This program search on many sources and return all found magnet links and is able to start the default torrent application, copy links and save its to file.', font = ('Segoe UI', 12), size = (56, 0), justification='left')],
+                [sg.Text('\n', font=('Segoe UI Light', 1))],
+                [sg.Text(' ' * 101), sg.Button('Close', size=(12, 0), font = ('Segoe UI Light', 10, 'bold'))],
+                [sg.Text('\n', font = ('Segoe UI Light', 1))]
+            ]
+
+            aboutWindow = sg.Window('About project', aboutLayout, icon='icon.ico')
+
+            while True:
+                aboutEvent, aboutValues = aboutWindow.read()
+                if aboutEvent in (None, 'Close'):
+                    aboutWindow.close()
+                    break
+
+        if event == 'Search':
+            search_sites=[]
+            for i in range(2,len(values)-3):
+                if values[i]:
+                    search_sites.append(sites_alias[i - 2])
+            Search(value_to_search=values[1], sites_to_search=search_sites,amount_of_pages=int(values[len(values)-2]),process=process)
+
+            downloadLinks = []
+
+            [downloadLinks.append(i) if i != 'foundLinks' else None for i in process.links.keys()]
+
+            results_Layout = [
+                [sg.Text('\n', font = ('Segoe UI Light', 5))],
+                [sg.Text('Process finished sucessfully!', font = ('Segoe UI Light', 14), size = (30, 0), justification = 'left')],
+                [sg.Text('\n', font = ('Segoe UI Light', 1))],
+                [sg.Listbox(values = downloadLinks, size = (90, 15), font=('Segoe UI', 10), enable_events=True)],
+                [sg.Text('\n', font=('Segoe UI Light', 1))],
+                [sg.Text(' ' * 16), sg.Button('Save all links to file', size=(22, 0), font=('Segoe UI Light', 10, 'bold')), sg.Button('Open magnet link', size=(16, 0), font=('Segoe UI Light', 10, 'bold')), sg.Button('Copy magnet link', size=(16, 0), font=('Segoe UI Light', 10, 'bold')), sg.Button('Close', size=(12, 0), font=('Segoe UI Light', 10, 'bold'))],
                 [sg.Text('\n', font=('Segoe UI Light', 1))]
             ]
 
-            restartWindow = sg.Window('Sucess!', restartLayout, auto_close=True, icon='icon.ico')
+            sg.PrintClose()
 
-            restartEvent, restartResult = restartWindow.read()
+            resultsWindow = sg.Window('Sucess!', results_Layout, icon='icon.ico')
 
-    if event == 'Support this project':
-        os.startfile('https://github.com/mzramna/MagicMagnet-Python/')
+            while True:
+                resultsEvent, resultsValues = resultsWindow.read()
 
-    if event == 'About':
-        aboutLayout = [
-            [sg.Text('\n', font=('Segoe UI Light', 1))],
-            [sg.Text('This project was born with an idea for automatize torrent downloading.\nI don\'t wanna search for torrent and see boring adverts. This program search on many sources and return all found magnet links and is able to start the default torrent application, copy links and save its to file.', font = ('Segoe UI', 12), size = (56, 0), justification='left')],
-            [sg.Text('\n', font=('Segoe UI Light', 1))],
-            [sg.Text(' ' * 101), sg.Button('Close', size=(12, 0), font = ('Segoe UI Light', 10, 'bold'))],
-            [sg.Text('\n', font = ('Segoe UI Light', 1))]
-        ]
+                if resultsEvent in (None, 'Close'):
+                    process.links, downloadLinks = {}, []
+                    process.links['foundLinks'] = 0
+                    resultsWindow.close()
+                    break
 
-        aboutWindow = sg.Window('About project', aboutLayout, icon='icon.ico')
+                if resultsEvent == 'Save all links to file':
+                    process.magnetsToJSON(values[1])
 
-        while True:
-            aboutEvent, aboutValues = aboutWindow.read()
-            if aboutEvent in (None, 'Close'):
-                aboutWindow.close()
-                break
+                    saveLayout = [
+                        [sg.Text('\n', font=('Segoe UI Light', 5))],
+                        [sg.Text(f'Magnet links saved sucessfully!', size=(25, 0), font=('Segoe UI Light', 14), justification='left')],
+                        [sg.Text('\n', font=('Segoe UI Light', 1))],
+                        [sg.Text(' ' * 6), sg.Button('Open file', size=(12, 0), font=('Segoe UI Light', 10, 'bold')), sg.Button('Close', size=(12, 0), font=('Segoe UI Light', 10, 'bold'))],
+                        [sg.Text('\n', font=('Segoe UI Light', 1))]
+                    ]
 
-    if event == 'Search':
-        search_sites=[]
-        for i in range(2,len(values)-3):
-            if values[i]:
-                search_sites.append(sites[i-2])
-        process.search(values[1], search_sites,total_search_pages=int(values[len(values)-2]))
+                    saveWindow = sg.Window('Sucess!', saveLayout, icon='icon.ico')
 
-        downloadLinks = []
+                    while True:
+                        saveEvent, saveResult = saveWindow.read()
 
-        [downloadLinks.append(i) if i != 'foundLinks' else None for i in process.links.keys()]
+                        if saveEvent in (None, 'Close'):
+                            saveWindow.close()
+                            break
 
-        results_Layout = [
-            [sg.Text('\n', font = ('Segoe UI Light', 5))],
-            [sg.Text('Process finished sucessfully!', font = ('Segoe UI Light', 14), size = (30, 0), justification = 'left')],
-            [sg.Text('\n', font = ('Segoe UI Light', 1))],
-            [sg.Listbox(values = downloadLinks, size = (90, 15), font=('Segoe UI', 10), enable_events=True)],
-            [sg.Text('\n', font=('Segoe UI Light', 1))],
-            [sg.Text(' ' * 16), sg.Button('Save all links to file', size=(22, 0), font=('Segoe UI Light', 10, 'bold')), sg.Button('Open magnet link', size=(16, 0), font=('Segoe UI Light', 10, 'bold')), sg.Button('Copy magnet link', size=(16, 0), font=('Segoe UI Light', 10, 'bold')), sg.Button('Close', size=(12, 0), font=('Segoe UI Light', 10, 'bold'))],
-            [sg.Text('\n', font=('Segoe UI Light', 1))]
-        ]
+                        if saveEvent == 'Open file':
+                            os.startfile(os.path.join(os.getcwd(), 'json', f'{values[1]}.json'))
 
-        sg.PrintClose()
+                if resultsEvent == 'Open magnet link':
+                    os.startfile(process.links[resultsValues[0][0]])
 
-        resultsWindow = sg.Window('Sucess!', results_Layout, icon='icon.ico')
+                if resultsEvent == 'Copy magnet link':
+                    pyperclip.copy(process.links[resultsValues[0][0]])
 
-        while True:
-            resultsEvent, resultsValues = resultsWindow.read()
+                    clipboardLayout = [
+                        [sg.Text('\n', font=('Segoe UI Light', 5))],
+                        [sg.Text('Copied to clipboard!', font=('Segoe UI Light', 14), size=(17, 0), justification='left')],
+                        [sg.Text('\n', font=('Segoe UI Light', 1))]
+                    ]
 
-            if resultsEvent in (None, 'Close'):
-                process.links, downloadLinks = {}, []
-                process.links['foundLinks'] = 0
-                resultsWindow.close()
-                break
+                    clipboardWindow = sg.Window('Sucess!', clipboardLayout, auto_close=True, icon='icon.ico')
 
-            if resultsEvent == 'Save all links to file':
-                process.magnetsToJSON(values[1])
+                    clipboardEvent, clipboard_result = clipboardWindow.read()
 
-                saveLayout = [
-                    [sg.Text('\n', font=('Segoe UI Light', 5))],
-                    [sg.Text(f'Magnet links saved sucessfully!', size=(25, 0), font=('Segoe UI Light', 14), justification='left')],
-                    [sg.Text('\n', font=('Segoe UI Light', 1))],
-                    [sg.Text(' ' * 6), sg.Button('Open file', size=(12, 0), font=('Segoe UI Light', 10, 'bold')), sg.Button('Close', size=(12, 0), font=('Segoe UI Light', 10, 'bold'))],
-                    [sg.Text('\n', font=('Segoe UI Light', 1))]
-                ]
+def main():
+    parser=argparse.ArgumentParser()
+    parser.add_argument("-w","--search-websites",help="the websites where will search, default 5")
+    parser.add_argument("-n","--number-of-pages",help="the amount of pages that will search in each compatible website, default all")
+    parser.add_argument("-s","--value-to-search",help="the text wich will be researched")
+    args=parser.parse_args()
+    print(args)
+    empty_params=0
+    process = MagicMagnet()
+    for i in args.__dict__ :
+        if args.__dict__[i] == None:
+            empty_params+=1
+    if empty_params == len(args.__dict__):
+        print("open UI")
+        process.ui = True
+        UI(process)
+    else:
+        parameters = {}
+        if args.value_to_search == None:
+            print("the parameter --value-to-search is mandatory in console mode")
+            exit(1)
+        else:
+            parameters["value_to_search"]=args.value_to_search
 
-                saveWindow = sg.Window('Sucess!', saveLayout, icon='icon.ico')
+        if args.search_websites == None or args.search_websites == "all" :
+            parameters["search_websites"]=sites_alias
+        else:
+            try:
+                tmp_sites=args.search_websites.split(",")
+                tmp_sites[0]
+            except :
+                tmp_sites=[tmp_sites]
+            for site in tmp_sites:
+                print(site)
+                if site not in sites_code_name:
+                    print("all the parameters of --search-websites must be one of the codes into the json file,not alias name")
+                    exit(1)
+            parameters["search_websites"]=tmp_sites
+        if args.number_of_pages == None:
+            parameters["number_of_pages"]=5
+        else:
+            parameters["number_of_pages"]=int(args.number_of_pages)
 
-                while True:
-                    saveEvent, saveResult = saveWindow.read()
-
-                    if saveEvent in (None, 'Close'):
-                        saveWindow.close()
-                        break
-
-                    if saveEvent == 'Open file':
-                        os.startfile(os.path.join(os.getcwd(), 'json', f'{values[1]}.json'))
-
-            if resultsEvent == 'Open magnet link':
-                os.startfile(process.links[resultsValues[0][0]])
-
-            if resultsEvent == 'Copy magnet link':
-                pyperclip.copy(process.links[resultsValues[0][0]])
-
-                clipboardLayout = [
-                    [sg.Text('\n', font=('Segoe UI Light', 5))],
-                    [sg.Text('Copied to clipboard!', font=('Segoe UI Light', 14), size=(17, 0), justification='left')],
-                    [sg.Text('\n', font=('Segoe UI Light', 1))]
-                ]
-
-                clipboardWindow = sg.Window('Sucess!', clipboardLayout, auto_close=True, icon='icon.ico')
-
-                clipboardEvent, clipboard_result = clipboardWindow.read()
+        print(parameters)
+        process.ui=False
+        Search(value_to_search=parameters["value_to_search"],sites_to_search=parameters["search_websites"],amount_of_pages=parameters["number_of_pages"],process=process)
+if __name__ == "__main__":
+    main()

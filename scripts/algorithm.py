@@ -81,8 +81,10 @@ class MagicMagnet():
     def _getPageLinks(self, searchURL):
         if searchURL.endswith('/&s'):
             searchURL = searchURL[:-2]
-
-        sg.Print(f'Searching in: {searchURL}\n', font=('Segoe UI', 10), no_button=True)
+        if self.ui:
+            sg.Print(f'Searching in: {searchURL}\n', font=('Segoe UI', 10), no_button=True)
+        else:
+            print(f'Searching in: {searchURL}\n')
         # print(f'Searching in: {searchURL}\n')
 
         try:
