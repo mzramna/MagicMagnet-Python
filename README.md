@@ -153,4 +153,5 @@ optional arguments:
                         if this flag recive any value the console mode will
                         not save any output file
   --silent SILENT       if this flag recive any value the aplication will not
-                        show any log,can be used with ui mode```
+                        show any log,can be used with ui mode
+```
