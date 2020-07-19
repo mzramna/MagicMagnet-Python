@@ -31,25 +31,30 @@ setting = settings.read_settings()
 
 sg.change_look_and_feel(setting['theme'])
 font = ('Segoe UI Light', 12)
-search_params = json.load(open("search_parameters.json"))
+try:
+    search_params = json.load(open("search_parameters.json"))
+except:
+    search_params=[]
 sites=[]
 for site in search_params:
     sites.append(search_params[site]["alias"])
 
 def create_table(websites_names: [str]):
-    result = []
+    checkboxs = []
     for website_name_index in range(0,len(websites_names),3):
-        if website_name_index+2 <len(websites_names):
-            result.append([sg.Text('  '), sg.Checkbox(websites_names[website_name_index], font=font, default=True),
-     sg.Checkbox(websites_names[website_name_index+1], font=font), sg.Checkbox(websites_names[website_name_index+2], font=font)])
-        elif website_name_index+1 <len(websites_names):
-            result.append(
-                [sg.Text('  '), sg.Checkbox(websites_names[website_name_index], font=font, default=True),
-                 sg.Checkbox(websites_names[website_name_index + 1], font=font,)])
+        checkbox_line =[]
+        if len(websites_names)>website_name_index+2:
+            checkbox_line.append(sg.Checkbox(websites_names[website_name_index],font=font))
+            checkbox_line.append(sg.Checkbox(websites_names[website_name_index+1], font=font))
+            checkbox_line.append(sg.Checkbox(websites_names[website_name_index + 2], font=font))
+        elif len(websites_names)>website_name_index+1:
+            checkbox_line.append(sg.Checkbox(websites_names[website_name_index],font=font))
+            checkbox_line.append(sg.Checkbox(websites_names[website_name_index+1], font=font))
         else:
-            result.append(
-                [sg.Text('  '), sg.Checkbox(websites_names[website_name_index], font=font,  default=True)])
-    return result
+            checkbox_line.append(sg.Checkbox(websites_names[website_name_index],font=font))
+        checkboxs.append(checkbox_line)
+    column=sg.Column(checkboxs,scrollable=True,vertical_scroll_only=True,size=[350,100])
+    return column
 
 def layout_builder(website_names:[str]):
     result=[]
@@ -62,10 +67,9 @@ def layout_builder(website_names:[str]):
     result.append([sg.Text('\n', font=('Segoe UI Light', 1))])
     result.append([sg.Text('    Choose your search source for content', font=('Segoe UI Light', 14))])
     result.append([sg.Text('\n', font=('Segoe UI Light', 1))])
-    for line in create_table(website_names):
-        result.append(line)
-
+    result.append([create_table(website_names)])
     result.append([sg.Text('\n', font=('Segoe UI Light', 1))])
+    result.append([sg.Text('total of pages to search(if applied):', font=('Segoe UI Light', 14)),sg.Spin([i for i in range(1,30)], initial_value=5)])
     result.append([sg.Text(f'    Application theme', font=('Segoe UI Light', 14)),
                    sg.Radio('Light', 'theme', default=True if 'Light' in setting['theme'] else False, font=font),
                     sg.Radio('Dark', 'theme', default=True if 'Dark' in setting['theme'] else False, font=font),
@@ -76,10 +80,9 @@ def layout_builder(website_names:[str]):
      sg.VerticalSeparator(pad=(6, 3)), sg.Button('Exit', size=(12, 0), font=('Segoe UI Light', 10, 'bold'))])
     result.append([sg.Text('\nDeveloped by Pedro Lemos (@pedrolemoz) and mzramna (@mzramna)', font=font, size=(42, 0), justification='center')])
     return result
-
 mainLayout = layout_builder(sites)
 
-window = sg.Window('Magic Magnet', mainLayout, size=(430, 510), icon='icon.ico')
+window = sg.Window('Magic Magnet', mainLayout, icon='icon.ico')
 
 process = MagicMagnet()
 
@@ -132,10 +135,10 @@ while True:
 
     if event == 'Search':
         search_sites=[]
-        for i in range(2,len(values)):
+        for i in range(2,len(values)-3):
             if values[i]:
                 search_sites.append(sites[i-2])
-        process.search(values[1], search_sites)
+        process.search(values[1], search_sites,total_search_pages=int(values[len(values)-2]))
 
         downloadLinks = []
 
