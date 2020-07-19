@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup, SoupStrainer
 class MagicMagnet():
     def __init__(self):
         self.links = {'foundLinks': 0}
+        self.debug=True
 
     def search(self, searchContent, sites: [str], total_search_pages=5):
         search_params = json.load(open("search_parameters.json"))
@@ -81,8 +82,11 @@ class MagicMagnet():
     def _getPageLinks(self, searchURL):
         if searchURL.endswith('/&s'):
             searchURL = searchURL[:-2]
-
-        sg.Print(f'Searching in: {searchURL}\n', font=('Segoe UI', 10), no_button=True)
+        if self.debug:
+            if self.ui:
+                sg.Print(f'Searching in: {searchURL}\n', font=('Segoe UI', 10), no_button=True)
+            else:
+                print(f'Searching in: {searchURL}\n')
         # print(f'Searching in: {searchURL}\n')
 
         try:
