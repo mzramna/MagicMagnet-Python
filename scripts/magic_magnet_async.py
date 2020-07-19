@@ -10,67 +10,58 @@ import aiohttp
 class MagicMagnet():
     def __init__(self):
         self.links = {'foundLinks': 0}
-    
-    async def search(self, searchContent, google = True, tpb = False, l337x = False, nyaa = False, eztv = False, yts = False, demonoid = False, ettv = False):
-        searchContent = urllib.parse.quote_plus(f'{searchContent}')
 
-        if google:
-            params = {
-                'searchURL': f'https://www.google.com/search?q={searchContent}+download+torrent',
-                'start': '/url?q=',
-                'notIn': ['accounts.google.com', '.org', 'youtube.com', 'facebook.com'],
-                'sliceString': [7, -88]
-                }
+    async def search(self, searchContent, sites: [str], total_search_pages=5):
+        search_params = json.load(open("search_parameters.json"))
+        for site in search_params:
+            if search_params[site]["alias"] in sites:
+                if "urlEncode" not in search_params[site] or search_params[site]["urlEncode"] == "":
+                    search_params[site]["searchURL"] = str(search_params[site]["searchURL"]).replace("{searchContent}",
+                                                                                                     str(
+                                                                                                         urllib.parse.quote_plus(
+                                                                                                             searchContent)))
+                elif search_params[site]["urlEncode"] == "utf-8":
+                    search_params[site]["searchURL"] = str(search_params[site]["searchURL"]).replace("{searchContent}",
+                                                                                                     str(
+                                                                                                         urllib.parse.quote(
+                                                                                                             searchContent)))
+                else:
+                    search_params[site]["searchURL"] = str(search_params[site]["searchURL"]).replace("{searchContent}",
+                                                                                                     str(
+                                                                                                         urllib.parse.quote_plus(
+                                                                                                             searchContent,
+                                                                                                             encoding=
+                                                                                                             search_params[
+                                                                                                                 site][
+                                                                                                                 "urlEncode"])))
+                if "multiple_page" in search_params[site] and search_params[site]["multiple_page"]:
+                    for page in range(1, total_search_pages):
+                        search_params[site]['searchURL'] = search_params[site]['searchURL'].replace("{page}", str(page))
+                        if search_params[site]["need_param"]:
+                            await self._getDownloadPages(search_params[site]['searchURL'],
+                                                   resultURL=search_params[site]["resultURL"],
+                                                   start=search_params[site]['start'],
+                                                   notIn=search_params[site]['notIn'],
+                                                   sliceString=search_params[site]['sliceString'])
+                        else:
+                            await self._getPageLinks(search_params[site]["searchURL"])
+                else:
+                    if search_params[site]["need_param"]:
+                        await self._getDownloadPages(search_params[site]['searchURL'],
+                                               resultURL=search_params[site]["resultURL"],
+                                               start=search_params[site]['start'],
+                                               notIn=search_params[site]['notIn'],
+                                               sliceString=search_params[site]['sliceString'])
+                    else:
+                        await self._getPageLinks(search_params[site]["searchURL"])
 
-            await self._getDownloadPages(params['searchURL'], start = params['start'], notIn = params['notIn'], sliceString = params['sliceString'])
-
-        if tpb:
-            for i in range(5):
-                await self._getPageLinks(f'https://tpb.party/search/{searchContent}/{i + 1}/7/0')
-
-        if l337x:
-            params = {
-                'searchURL': f'https://www.1377x.to/search/{searchContent}/1/',
-                'start': '/torrent',
-                'resultURL': 'https://www.1377x.to'
-                }
-            
-            await self._getDownloadPages(params['searchURL'], resultURL = params['resultURL'], start = params['start'])
-
-        if nyaa:
-            for i in range(5):
-                await self._getPageLinks(f'https://nyaa.si/?q={searchContent}&f=0&c=0_0&s=seeders&o=desc&p={i + 1}')
-        
-        if eztv:
-            await self._getPageLinks(f'https://eztv.io/search/{searchContent}')
-
-        if yts:
-            params = {
-                'searchURL': f'https://yts.mx/browse-movies/{searchContent}/all/all/0/latest',
-                'start': 'https://yts.mx/movie/'
-                }
-                
-            await self._getDownloadPages(params['searchURL'], start = params['start'])
-        
-        if demonoid:
-            params = {
-                'searchURL': f'https://demonoid.is/files/?category=0&subcategory=0&quality=0&seeded=2&external=2&query={searchContent}&sort=',
-                'start': '/files/details',
-                'resultURL': 'https://demonoid.is'
-                }
-
-            await self._getDownloadPages(params['searchURL'], start = params['start'], resultURL = params['resultURL'])
-        
-        if ettv:
-            params = {
-            'searchURL': f'https://www.ettv.to/torrents-search.php?search={searchContent}',
-            'start': '/torrent/',
-            'resultURL': 'https://www.ettv.to'
-            }
-
-            await self._getDownloadPages(params['searchURL'], start = params['start'], resultURL = params['resultURL'])
-
-    async def _getDownloadPages(self, searchURL, resultURL = None, start = None, notIn = None, sliceString = None):
+    async def _getDownloadPages(self, searchURL,start, resultURL = None,  notIn = None, sliceString = None):
+        if resultURL == "":
+            resultURL = None
+        if notIn == "":
+            notIn = None
+        if sliceString == "":
+            sliceString = None
         async with aiohttp.ClientSession() as client:
         
 	        async with client.get(searchURL) as request:
