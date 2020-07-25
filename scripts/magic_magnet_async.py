@@ -1,59 +1,50 @@
 import os
 import json
 import urllib.parse
-from pathlib import Path
 from bs4 import BeautifulSoup, SoupStrainer
-import asyncio
 import aiohttp
-
+import PySimpleGUI as sg
 
 class MagicMagnet():
-    def __init__(self):
+    def __init__(self, debug=True, search_param_json="search_parameters.json"):
         self.links = {'foundLinks': 0}
+        self.debug = debug
+        self.search_params = json.load(open(search_param_json))
 
     async def search(self, searchContent, sites: [str], total_search_pages=5):
-        search_params = json.load(open("search_parameters.json"))
-        for site in search_params:
-            if search_params[site]["alias"] in sites:
-                if "urlEncode" not in search_params[site] or search_params[site]["urlEncode"] == "":
-                    search_params[site]["searchURL"] = str(search_params[site]["searchURL"]).replace("{searchContent}",
-                                                                                                     str(
-                                                                                                         urllib.parse.quote_plus(
-                                                                                                             searchContent)))
-                elif search_params[site]["urlEncode"] == "utf-8":
-                    search_params[site]["searchURL"] = str(search_params[site]["searchURL"]).replace("{searchContent}",
-                                                                                                     str(
-                                                                                                         urllib.parse.quote(
-                                                                                                             searchContent)))
+        for site in self.search_params:
+            if self.search_params[site]["alias"] in sites:
+                if "urlEncode" not in self.search_params[site] or self.search_params[site]["urlEncode"] == "":
+                    self.search_params[site]["searchURL"] = str(self.search_params[site]["searchURL"]).replace(
+                        "{searchContent}", str(urllib.parse.quote_plus(searchContent)))
+                elif self.search_params[site]["urlEncode"] == "utf-8":
+                    self.search_params[site]["searchURL"] = str(self.search_params[site]["searchURL"]).replace(
+                        "{searchContent}", str(urllib.parse.quote(searchContent)))
                 else:
-                    search_params[site]["searchURL"] = str(search_params[site]["searchURL"]).replace("{searchContent}",
-                                                                                                     str(
-                                                                                                         urllib.parse.quote_plus(
-                                                                                                             searchContent,
-                                                                                                             encoding=
-                                                                                                             search_params[
-                                                                                                                 site][
-                                                                                                                 "urlEncode"])))
-                if "multiple_page" in search_params[site] and search_params[site]["multiple_page"]:
+                    self.search_params[site]["searchURL"] = str(self.search_params[site]["searchURL"]).replace(
+                        "{searchContent}",
+                        str(urllib.parse.quote_plus(searchContent, encoding=self.search_params[site]["urlEncode"])))
+                if "multiple_page" in self.search_params[site] and self.search_params[site]["multiple_page"]:
                     for page in range(1, total_search_pages):
-                        search_params[site]['searchURL'] = search_params[site]['searchURL'].replace("{page}", str(page))
-                        if search_params[site]["need_param"]:
-                            await self._getDownloadPages(search_params[site]['searchURL'],
-                                                   resultURL=search_params[site]["resultURL"],
-                                                   start=search_params[site]['start'],
-                                                   notIn=search_params[site]['notIn'],
-                                                   sliceString=search_params[site]['sliceString'])
+                        self.search_params[site]['searchURL'] = self.search_params[site]['searchURL'].replace("{page}",
+                                                                                                              str(page))
+                        if self.search_params[site]["need_param"]:
+                            await self._getDownloadPages(self.search_params[site]['searchURL'],
+                                                   resultURL=self.search_params[site]["resultURL"],
+                                                   start=self.search_params[site]['start'],
+                                                   notIn=self.search_params[site]['notIn'],
+                                                   sliceString=self.search_params[site]['sliceString'])
                         else:
-                            await self._getPageLinks(search_params[site]["searchURL"])
+                            await self._getPageLinks(self.search_params[site]["searchURL"])
                 else:
-                    if search_params[site]["need_param"]:
-                        await self._getDownloadPages(search_params[site]['searchURL'],
-                                               resultURL=search_params[site]["resultURL"],
-                                               start=search_params[site]['start'],
-                                               notIn=search_params[site]['notIn'],
-                                               sliceString=search_params[site]['sliceString'])
+                    if self.search_params[site]["need_param"]:
+                        await self._getDownloadPages(self.search_params[site]['searchURL'],
+                                               resultURL=self.search_params[site]["resultURL"],
+                                               start=self.search_params[site]['start'],
+                                               notIn=self.search_params[site]['notIn'],
+                                               sliceString=self.search_params[site]['sliceString'])
                     else:
-                        await self._getPageLinks(search_params[site]["searchURL"])
+                        await self._getPageLinks(self.search_params[site]["searchURL"])
 
     async def _getDownloadPages(self, searchURL,start, resultURL = None,  notIn = None, sliceString = None):
         if resultURL == "":
@@ -97,7 +88,11 @@ class MagicMagnet():
             searchURL = searchURL[:-2] 
 
         #sg.Print(f'Searching in: {searchURL}\n', font=('Segoe UI', 10), no_button=True)
-        print(f'Searching in: {searchURL}\n')
+        if self.debug:
+            if self.ui:
+                sg.Print(f'Searching in: {searchURL}\n', font=('Segoe UI', 10), no_button=True)
+            else:
+                print(f'Searching in: {searchURL}\n')
         
         async with aiohttp.ClientSession() as client:
         	async with client.get(searchURL) as request:
@@ -119,7 +114,7 @@ class MagicMagnet():
 
         return urllib.parse.unquote_plus(name)
 
-    async def magnetsToJSON(self, filename):
+    def magnetsToJSON(self, filename):
         if os.path.exists(os.path.join(os.getcwd(), 'json')) == False:
             os.mkdir(os.path.join(os.getcwd(), 'json'))
 
@@ -130,11 +125,11 @@ class MagicMagnet():
         with open(os.path.join(pathToFile, f'{filename}.json'), 'w', encoding = 'utf-8') as file:
             file.write(data)
 
-async def main():  
-	magic_magnet = MagicMagnet()
-	await magic_magnet.search('Ubuntu', google = False, tpb = True)
-	print(magic_magnet.links)
-	
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
-loop.close()
+# async def main():
+# 	magic_magnet = MagicMagnet()
+# 	await magic_magnet.search('Ubuntu')
+# 	print(magic_magnet.links)
+#
+# loop = asyncio.get_event_loop()
+# loop.run_until_complete(main())
+# loop.close()

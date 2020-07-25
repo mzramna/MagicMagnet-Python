@@ -13,7 +13,7 @@ class MagicMagnet():
         self.debug=debug
         self.search_params = json.load(open(search_param_json))
 
-    def search(self, searchContent, sites: [str], total_search_pages=5):
+    def search(self,sites: [str], searchContent:str,  total_search_pages=5):
 
         for site in self.search_params:
             if self.search_params[site]["alias"] in sites:

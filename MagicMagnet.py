@@ -1,7 +1,9 @@
+import asyncio
+
 import PySimpleGUI as sg
 import os,json,sys
 import pyperclip
-from scripts.algorithm import MagicMagnet
+from scripts.magic_magnet_async import MagicMagnet
 from scripts.settings import Settings
 import argparse
 
@@ -91,7 +93,10 @@ def layout_builder(website_names:[str],setting):
     return result
 
 def Search(value_to_search,sites_to_search,amount_of_pages,process):
-    process.search(value_to_search, sites_to_search, total_search_pages=amount_of_pages)
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(
+        process.search(searchContent=value_to_search, sites=sites_to_search, total_search_pages=amount_of_pages))
+    loop.close()
 
 def UI(process):
     settings = Settings()
