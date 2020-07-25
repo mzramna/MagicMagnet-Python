@@ -6,7 +6,6 @@ import PySimpleGUI as sg
 import requests
 from bs4 import BeautifulSoup, SoupStrainer
 
-
 class MagicMagnet():
     def __init__(self,debug=True,search_param_json="search_parameters.json"):
         self.links = {'foundLinks': 0}
@@ -101,17 +100,31 @@ class MagicMagnet():
         for i in result.find_all('a', href=True):
             if (i.get('href') != None) and (i.get('href').startswith('magnet:?xt=')) and (len(i.get('href')) > 64):
                 if i.get('href') not in self.links:
-                    self.links[self._getTorrentName(i.get('href'))] = i.get('href')
+                    data=self._getTorrentData(i.get('href'),delay=10)
+                    #if data['bittorrent-seeders']+data['webtorrent-seeders']>0:
+                    self.links[data["name"]] = data
 
         self.links['foundLinks'] = len(self.links)
 
-    def _getTorrentName(self, magnetLink):
+    def _getTorrentData(self, magnetLink,delay=5):
+        url="https://checker.openwebtorrent.com/"
+        with requests.session() as s:
+            request=s.get(url,timeout=(delay, delay),params={"magnet_link":magnetLink})
+        print(request.url)
+        spans=BeautifulSoup(request.content, 'lxml', parse_only=SoupStrainer('span'))
+        result={}
         name = magnetLink.split('tr=')[0][64:-1]
 
         if name.startswith(';dn=') and name.endswith('&amp'):
             name = name[4:-4]
-
-        return urllib.parse.unquote_plus(name)
+        result["name"]=urllib.parse.unquote_plus(name)
+        result["link"]=magnetLink
+        for span in spans:
+            try:
+                result[span.__dict__["attrs"]["id"]] = int(span.__dict__["contents"][0])
+            except:
+                pass
+        return result
 
     def magnetsToJSON(self, filename):
         if os.path.exists(os.path.join(os.getcwd(), 'json')) == False:
